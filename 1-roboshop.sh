@@ -32,8 +32,8 @@ do
         echo "$instance PUBLIC IP Address : $PUBLIC_IP"
 
     fi
-    echo "$instance IP Address : $PUBLIC_IP"
-    echo "$instance IP Address : $PRIVATE_IP"
+    echo "$instance IP Address is public : $PUBLIC_IP"
+    echo "$instance IP Address is private : $PRIVATE_IP"
 
 done
 
