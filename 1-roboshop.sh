@@ -22,7 +22,7 @@ DOMAIN_NAME="muruga.site"
 for instance in ${INSTANCES[@]}
 do
 
-    INSTACE_ID=$(aws ec2 run-instances --image-id ami-09c813fb71547fc4f --instance-type t2.micro --security-group-ids sg-0d8d7189bee7912bc --tag-specifications 'ResourceType=instance,Tags=[{Key=Name, Value=$instance}]' --query 'Instances[0].InstanceId' --output text)  # have instance id is replaced in the place of private ip, due to which public ip need to be query in this soo
+    INSTACE_ID=$(aws ec2 run-instances --image-id ami-09c813fb71547fc4f --instance-type t2.micro --security-group-ids sg-0d8d7189bee7912bc --tag-specifications "ResourceType=$instance,Tags=[{Key=Name, Value=$instance}]" --query 'Instances[0].InstanceId' --output text)  # have instance id is replaced in the place of private ip, due to which public ip need to be query in this soo
     if [ $instance != "frontend" ]
     then
         PRIVATE_IP=$(aws ec2 describe-instances --instance-ids $INSTACE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
