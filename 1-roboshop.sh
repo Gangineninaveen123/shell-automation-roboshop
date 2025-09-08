@@ -9,7 +9,7 @@ SG_ID="sg-0d8d7189bee7912bc"
 
 # Creating Instance Array to install
 #here whatever we are doing in the console, that can be done from command line
-INSTANCES=("mongodb" "reddis" "mysql" "rabbitmq" "catalougue" "user" "cart" "shipping" "payment" "dispatch" "frtontend")
+INSTANCES=("mongodb" "reddis" "mysql" "rabbitmq" "catalougue" "user" "cart" "shipping" "payment" "dispatch" "frontend")
 
 
 #Creating Zone id in route53
