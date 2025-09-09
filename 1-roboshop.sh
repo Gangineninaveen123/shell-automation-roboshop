@@ -4,7 +4,7 @@
 
 AMI_ID="ami-09c813fb71547fc4f"
 # SAME LIKE AMI, TAKE SG ID
-SG_ID="sg-0d8d7189bee7912bc"
+SG_ID="sg-0d8d7189bee7912bc"  # replace with our own SG_ID
 #Subnet its going to default, so no worries for now
 
 # Creating Instance Array to install
@@ -13,9 +13,9 @@ INSTANCES=("mongodb" "reddis" "mysql" "rabbitmq" "catalougue" "user" "cart" "shi
 
 
 #Creating Zone id in route53
-ZONE_ID="Z0373351299AU3JG23M5V"
+ZONE_ID="Z0373351299AU3JG23M5V" # Replace with own ZONE_ID
 #Creating Domain Name in route 53
-DOMAIN_NAME="muruga.site"
+DOMAIN_NAME="muruga.site"  #Replace with own DOMAIN_NAME
 
 #Now using loop concept to download all the instances
 
@@ -35,15 +35,12 @@ do
     echo "$instance IP Address is public : $IP"
     echo "$instance IP Address is private : $IP"
 
-done
+    # Updating or creating records route 53 through aws cli  ->  its in stack over flow take the code from it and update records
 
-
-# Updating or creating records route 53 through aws cli  ->  its in stack over flow take the code from it and update records
-
-aws route53 change-resource-record-sets \
-  --hosted-zone-id $ZONE_ID \
-  --change-batch '
-  {
+    aws route53 change-resource-record-sets \
+    --hosted-zone-id $ZONE_ID \
+    --change-batch '
+    {
     "Comment": "Creating or updating record set for cognito endpoint"
     ,"Changes": [{
       "Action"              : "UPSERT"
@@ -56,4 +53,10 @@ aws route53 change-resource-record-sets \
         }]
       }
     }]
-  }
+  }'
+done
+
+
+
+
+  
