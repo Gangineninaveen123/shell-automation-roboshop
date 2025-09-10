@@ -60,8 +60,17 @@ dnf install nodejs -y &>>$LOG_FILE
 VALIDATE $? "Installing nodejs 20 version"
 
 #Creating system user roboshop to run the roboshop app
-useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
-VALIDATE $? "Creating system user roboshop"
+#while, running it on second time, i got an error at system user gort failed, so using idempotency : sol for this is idempotency->, which irrespective of the number of times you run, nothing changes
+
+id roboshop
+if [ $? -ne 0 ]
+then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+    VALIDATE $? "Creating system user roboshop"
+else
+    echo -e "System user roboshop already created ... $Y Skipping $N"
+fi
+
 
 # Creating app directory to store our Catalogue code info
 mkdir /app 
