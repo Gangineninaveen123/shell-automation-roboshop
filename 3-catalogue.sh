@@ -107,5 +107,12 @@ dnf install mongodb-mongosh -y &>>$LOG_FILE
 VALIDATE $? "Installing Mongodb Client"
 
 #Loading Master Data of the List of products we want to sell and their quantity information also there in the same master data.
-mongosh --host mongodb.muruga.site </app/db/master-data.js &>>$LOG_FILE
-VALIDATE $? "Loading data into Mongodb server"
+STATUS=$(mongosh --host mongodb.muruga.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")') # if data is is already present in DB then the evalutaion ll be grater than zero, and if not data in db evaluation is lessthan 0 
+if [ $STATUS -lt 0 ]
+then
+    mongosh --host mongodb.muruga.site </app/db/master-data.js &>>$LOG_FILE
+    VALIDATE $? "Loading data into Mongodb server"
+
+else
+    echo -e "Data is already loaded ... $Y SKIPPING"
+fi
