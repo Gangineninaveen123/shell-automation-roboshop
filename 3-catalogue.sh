@@ -73,7 +73,7 @@ fi
 
 
 # Creating app directory to store our Catalogue code info
-mkdir /app 
+mkdir -p /app # if already create also, it ll not show error at run time [-p]
 VALIDATE $? "Creating app directory"
 
 #Downloading catalogue code in tmp folder
