@@ -46,7 +46,7 @@ VALIDATE()
 }
 
 # copying the mongobd version which is in mongodb repo file
-cp mongodb.repo /etc/yum.repos.d/mongo.repo
+cp mongodb.repo /etc/yum.repos.d/mongodb.repo
 
 # calling VALIDATE() function
 VALIDATE $? "Copying mongodb repo file"
@@ -65,7 +65,7 @@ systemctl start mongod &>>$LOG_FILE
 # Calling VALIDATE Function to start of mongodb server is sucessfull or not
 VALIDATE $? "Starting Mongodb server"
 
-# Editing mongodb configuration file for remote connections
+# Editing mongodb configuration file for remote connections in sed -> Stream Line editor, which is used for automation such as vim in manual
 sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mongod.conf
 VALIDATE $? "Editing MongoDB configuration file for remote connections"
 
