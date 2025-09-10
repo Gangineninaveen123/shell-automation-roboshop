@@ -32,8 +32,8 @@ do
         echo "$instance PUBLIC IP Address : $IP"
 
     fi
-    echo "$instance IP Address is public : $IP"
-    echo "$instance IP Address is private : $IP"
+    
+    echo "$instance IP Address is : $IP"
 
     # Updating or creating records route 53 through aws cli  ->  its in stack over flow take the code from it and update records
 
