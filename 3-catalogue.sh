@@ -98,3 +98,4 @@ VALIDATE $? "Installing Mongodb Client"
 
 #Loading Master Data of the List of products we want to sell and their quantity information also there in the same master data.
 mongosh --host mongodb.muruga.site </app/db/master-data.js &>>$LOG_FILE
+VALIDATE $? "Loading data into Mongodb server"
