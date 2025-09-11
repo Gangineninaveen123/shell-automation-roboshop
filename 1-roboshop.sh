@@ -19,7 +19,7 @@ DOMAIN_NAME="muruga.site"  #Replace with own DOMAIN_NAME
 
 #Now using loop concept to download all the instances
 
-for instance in ${INSTANCES[@]}
+for instance in $@  # Here no need to create all the instances at once before practicing only, in run time, how many instances required , then that many instances will be passed to the runtime script while executing
 do
 
     INSTACE_ID=$(aws ec2 run-instances --image-id ami-09c813fb71547fc4f --instance-type t3.micro --security-group-ids sg-0d8d7189bee7912bc --tag-specifications "ResourceType=instance,Tags=[{Key=Name, Value=$instance}]" --query 'Instances[0].InstanceId' --output text)  # have instance id is replaced in the place of private ip, due to which public ip need to be query in this soo
@@ -27,9 +27,11 @@ do
     then
         IP=$(aws ec2 describe-instances --instance-ids $INSTACE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
         echo "$instance PRIVATE IP Address : $IP"
+        RECORD_NAME=$instance.$DOMAIN_NAME
     else
         IP=$(aws ec2 describe-instances --instance-ids $INSTACE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
         echo "$instance PUBLIC IP Address : $IP"
+        RECORD_NAME=$DOMAIN_NAME
 
     fi
     
@@ -45,7 +47,7 @@ do
         ,"Changes": [{
         "Action"              : "UPSERT"
         ,"ResourceRecordSet"  : {
-            "Name"              : "'$instance'.'$DOMAIN_NAME'"
+            "Name"              : "'$RECORD_NAME'"
             ,"Type"             : "A"
             ,"TTL"              : 1
             ,"ResourceRecords"  : [{
