@@ -39,7 +39,7 @@ fi
 
 #Root password to set up in order to start using the database service
 echo -e "Please enter the root password to setup"
-echo read -s MYSQL_ROOTPASSWORD
+read -s MYSQL_ROOTPASSWORD
 
 
 #, here $1 -> means takes exit code $? as input $2 argument, which is given in the code, while calliong function
