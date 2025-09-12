@@ -92,8 +92,8 @@ mv target/shipping-1.0.jar shipping.jar  &>> $LOG_FILE
 VALIDATE $? "Moving and renaming jar file"
 
 #copying shipping.service file , dependencies in location /etc/systemd/system/shipping.service
-cp $SCRIPT_DIR/shipping.service /etc/systemd/system/shipping.service &>>$LOG_FILE
-VALIDATE $? "Setting up SystemD  for systemctl services"
+cp $SCRIPT_DIR/shipping.service /etc/systemd/system/shipping.service
+
 
 #daemon-reload service to load to tell the systemd file
 systemctl daemon-reload &>> $LOG_FILE
