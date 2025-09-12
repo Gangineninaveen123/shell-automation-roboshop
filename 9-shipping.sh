@@ -109,9 +109,9 @@ dnf install mysql -y  &>> $LOG_FILE
 VALIDATE $? "Installing mysql client"
 
 #Load Schema, Schema in database is the structure to it like what tables to be created and their necessary application layouts.
-mysql -h mysql.muruga.site -uroot -pRoboShop@1 < /app/db/schema.sql &>> $LOG_FILE
-mysql -h mysql.muruga.site -uroot -pRoboShop@1 < /app/db/app-user.sql &>> $LOG_FILE
-mysql -h mysql.muruga.site -uroot -pRoboShop@1 < /app/db/master-data.sql &>> $LOG_FILE
+mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOTPASSWORD < /app/db/schema.sql &>> $LOG_FILE
+mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOTPASSWORD < /app/db/app-user.sql &>> $LOG_FILE
+mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOTPASSWORD < /app/db/master-data.sql &>> $LOG_FILE
 VALIDATE $? "Loading MASTER data into mysql"
 
 
