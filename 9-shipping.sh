@@ -109,13 +109,23 @@ VALIDATE $? "Starting shipping"
 # installing mysql client. We need to load the schema to mysql db
 dnf install mysql -y  &>>$LOG_FILE
 VALIDATE $? "Installing MYSQL client"
-#Load Schema, Schema in database is the structure to it like what tables to be created and their necessary application layouts.
-mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOT_PASSWORD < /app/db/schema.sql  &>> $LOG_FILE
-# Create app user, MySQL expects a password authentication, Hence we need to create the user in mysql database for shipping app to connect.
-mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOT_PASSWORD < /app/db/app-user.sql &>> $LOG_FILE
-#Load Master Data, This includes the data of all the countries and their cities with distance to those cities.
-mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOT_PASSWORD < /app/db/master-data.sql &>> $LOG_FILE
-VALIDATE $? "Loading data into mysql"
+
+#loading data to mysql db by the help of below query
+mysql -h mysql.muruga.site -u root -pRoboShop@1 -e 'use cities'
+if [ $? -ne 0 ]
+then
+    #Load Schema, Schema in database is the structure to it like what tables to be created and their necessary application layouts.
+    mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOT_PASSWORD < /app/db/schema.sql  &>> $LOG_FILE
+    # Create app user, MySQL expects a password authentication, Hence we need to create the user in mysql database for shipping app to connect.
+    mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOT_PASSWORD < /app/db/app-user.sql &>> $LOG_FILE
+    #Load Master Data, This includes the data of all the countries and their cities with distance to those cities.
+    mysql -h mysql.muruga.site -uroot -p$MYSQL_ROOT_PASSWORD < /app/db/master-data.sql &>> $LOG_FILE
+    VALIDATE $? "Loading data into mysql"
+else
+    echo -e "Data is already loaded into mysql DB.. $Y SKIPPING $N"
+fi
+
+
 
 #Restarting shipping
 systemctl restart shipping &>> $LOG_FILE
