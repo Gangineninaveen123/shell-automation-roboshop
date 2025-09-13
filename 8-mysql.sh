@@ -39,7 +39,7 @@ fi
 #Setting up MYSQL ROOT PASSWORD
 echo "Please enter the root password"
 read -s MYSQL_ROOT_PASSWORD
-echo "$MYSQL_ROOT_PASSWORD"
+echo -e "$MYSQL_ROOT_PASSWORD"
 
 #, here $1 -> means takes exit code $? as input $2 argument, which is given in the code, while calliong function
 
