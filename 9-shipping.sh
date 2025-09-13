@@ -111,7 +111,7 @@ dnf install mysql -y  &>>$LOG_FILE
 VALIDATE $? "Installing MYSQL client"
 
 #loading data to mysql db by the help of below query
-mysql -h mysql.muruga.site -u root -$MYSQL_ROOT_PASSWORD -e 'use cities'
+mysql -h mysql.muruga.site -u root -p$MYSQL_ROOT_PASSWORD -e 'use cities'
 if [ $? -ne 0 ]
 then
     #Load Schema, Schema in database is the structure to it like what tables to be created and their necessary application layouts.
