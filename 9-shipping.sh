@@ -36,7 +36,7 @@ else
 
 fi
 
-#Setting up MYSQL ROOT PASSWORD
+#Setting up shipping ROOT PASSWORD - RoboShop@1
 echo "Please enter the root password"
 read -s MYSQL_ROOT_PASSWORD
 echo -e "$MYSQL_ROOT_PASSWORD"

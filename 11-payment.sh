@@ -2,7 +2,7 @@
 #start time
 START_TIME=$(date +%s)
 # Checking root access 
-USER_ID=$(id -u)
+USERID=$(id -u)
 
 # Creating Variables for Colours
 R="\e[31m"
@@ -27,7 +27,7 @@ mkdir -p $LOGS_FOLDER
 echo "Script started and executed at: $(date)" | tee -a $LOG_FILE
 
 # Checking user has root previlages to run or not
-if [ $USER_ID -ne 0 ]
+if [ $USERID -ne 0 ]
 then
     echo -e " $R ERROR:: Please run the shell script with root user $N" | tee -a $LOG_FILE # here $R which starts colour as Red, and at ending $N ll make it as Normal.
     exit 1 # give other than zero[1-127] as exit code, so it ll not move forward from this step.
@@ -35,11 +35,6 @@ else
     echo "You are running with root user" | tee -a $LOG_FILE
 
 fi
-
-#Setting up MYSQL ROOT PASSWORD - RoboShop@1
-echo "Please enter the root password"
-read -s MYSQL_ROOT_PASSWORD
-echo -e "$MYSQL_ROOT_PASSWORD"
 
 #, here $1 -> means takes exit code $? as input $2 argument, which is given in the code, while calliong function
 
@@ -54,25 +49,60 @@ VALIDATE()
     fi
 }
 
-#installing mysql server
-dnf install mysql-server -y &>> $LOG_FILE
-VALIDATE $? "Installing mysql server"
+#Installoing Python 3
+dnf install python3 gcc python3-devel -y &>>$LOG_FILE
+VALIDATE $? "Installoing Python 3"
 
-#Enabling mysql
-systemctl enable mysqld &>> $LOG_FILE
-VALIDATE $? "Enabling mysql"
 
-#starting mysql
-systemctl start mysqld &>> $LOG_FILE
-VALIDATE $? "Starting mysql"
+#Creating system user roboshop to run the roboshop app
+#while, running it on second time, i got an error at system user gort failed, so using idempotency : sol for this is idempotency->, which irrespective of the number of times you run, nothing changes
 
-#Setting up root password - Next, We need to change the default root password in order to start using the database service. Use password RoboShop@1 or any other as per your choice.
-mysql_secure_installation --set-root-pass $MYSQL_ROOT_PASSWORD &>> $LOG_FILE
-VALIDATE $? "Starting mysql"
+id roboshop
+if [ $? -ne 0 ]
+then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+    VALIDATE $? "Creating system user roboshop"
+else
+    echo -e "System user roboshop already created ... $Y Skipping $N"
+fi
 
+
+# Creating app directory to store our user code info
+mkdir -p /app # if already create also, it ll not show error at run time [-p]
+VALIDATE $? "Creating app directory"
+
+#Downloading user code in tmp folder
+curl -o /tmp/payment.zip https://roboshop-artifacts.s3.amazonaws.com/payment-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading user code"
+
+#Unzipping user code info into app directory
+rm -rf /app/* # i am deleteing the content in app directory, because in log files , its asking for oveeride the previous content, so simply ll delete the data, so no ovveride needed.
+cd /app 
+unzip /tmp/payment.zip &>>$LOG_FILE
+VALIDATE $? "Unzipping payment code info into app directory"
+
+#Installoing Dependencies - Every application is developed by development team will have some common softwares that they use as libraries. This application also have the same way of defined dependencies in the application configuration.
+cd /app
+pip3 install -r requirements.txt &>>$LOG_FILE
+VALIDATE $? "Installing requirements.txt Build file"
+
+
+#setting up a new service in systemd so systemctl can manage this service
+cp $SCRIPT_DIR/11-payment.service /etc/systemd/system/payment.service
+
+#Loading the daemon to tell the ssyetm d folder that services are loaded
+systemctl daemon-reload &>>$LOG_FILE
+VALIDATE $? "Loading daemon services"
+
+#Enable and start the payment services
+systemctl enable payment &>>$LOG_FILE
+VALIDATE $? "Enabling payment services"
+systemctl start payment &>>$LOG_FILE
+VALIDATE $? "Starting Payment server"
 
 # endtime of script
 END_TIME=$(date +%s)
 TOTAL_TIME=$(($END_TIME - $START_TIME))
 
 echo -e " Script execution completed sucessfully, $Y Time taken: $TOTAL_TIME seconds $N" | tee -a $LOG_FILE
+
