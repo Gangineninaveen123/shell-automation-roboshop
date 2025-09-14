@@ -77,9 +77,10 @@ unzip /tmp/dispatch.zip &>>$LOG_FILE
 VALIDATE $? "Unzipping payment code info into app directory"
 
 #downloading the dependencies & build the software.
-go mod init dispatch &>>$LOG_FILE
-go get &>>$LOG_FILE
-go build &>>$LOG_FILE
+cd /app 
+go mod init dispatch
+go get 
+go build
 VALIDATE $? "Downloading dependencies of dispatch"
 
 #setup a new service in systemd so systemctl can manage this service for dispatch server
