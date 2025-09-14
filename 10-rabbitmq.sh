@@ -71,8 +71,8 @@ systemctl start rabbitmq-server &>> $LOG_FILE
 VALIDATE $? "Starting rabitmq server"
 
 #RabbitMQ comes with a default username / password as guest/guest. But this user cannot be used to connect. Hence, we need to create one user-roboshop Password-roboshop123
-rabbitmqctl add_user roboshop $RABBITMQ_PASSWORD
-rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
+rabbitmqctl add_user roboshop $RABBITMQ_PASSWORD &>> $LOG_FILE
+rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*" &>> $LOG_FILE
 
 
 # endtime of script
