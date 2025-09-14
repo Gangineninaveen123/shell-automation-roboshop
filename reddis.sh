@@ -1,10 +1,12 @@
 #!/bin/bash
 source ./commoncode.sh
-
-App_Name=mysql
+#Appname or module name
+App_Name=reddis
 
 #checking app is running with root access or not and calling function
 check_root
+
+
 #disabling redis
 dnf module disable redis -y &>> $LOG_FILE
 VALIDATE $? "Disabling default redis version"
