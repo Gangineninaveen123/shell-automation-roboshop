@@ -26,6 +26,66 @@ mkdir -p $LOGS_FOLDER
 # script starting date and time, so easy like like which script executes at what time and need to store in LOG_FILE
 echo "Script started and executed at: $(date)" | tee -a $LOG_FILE
 
+# Creating app directory and app setup
+app_setup(){
+    #Creating system user roboshop to run the roboshop app
+    #while, running it on second time, i got an error at system user gort failed, so using idempotency : sol for this is idempotency->, which irrespective of the number of times you run, nothing changes
+
+    id roboshop &>>$LOG_FILE
+    if [ $? -ne 0 ]
+    then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+        VALIDATE $? "Creating system user roboshop"
+    else
+        echo -e "System user roboshop already created ... $Y Skipping $N"
+    fi
+
+    # Creating app directory and app setup to store our apptier module code info
+    mkdir -p /app # if already create also, it ll not show error at run time [-p]
+    VALIDATE $? "Creating app directory"
+
+    #Downloading app code in tmp folder
+    curl -o /tmp/$App_Name.zip https://roboshop-artifacts.s3.amazonaws.com/$App_Name-v3.zip &>>$LOG_FILE
+    VALIDATE $? "Downloading $App_Name code"
+
+    #Unzipping app code info into app directory
+    rm -rf /app/* # i am deleteing the content in app directory, because in log files , its asking for oveeride the previous content, so simply ll delete the data, so no ovveride needed.
+    cd /app 
+    unzip /tmp/$App_Name.zip &>>$LOG_FILE
+    VALIDATE $? "Unzipping $App_Name code info into app directory"
+
+}
+#nodejs install
+nodejs_setup(){
+    # Disabling default nodejs Version
+    dnf module disable nodejs -y &>>$LOG_FILE
+    VALIDATE $? "Disabling default nodejs Version"
+
+    #Enabling nodejs Version 20 as per developers choice
+    dnf module enable nodejs:20 -y &>>$LOG_FILE
+    VALIDATE $? "Enabling nodejs Version 20 as per developers choice"
+
+    #Installing Nodejs
+    dnf install nodejs -y &>>$LOG_FILE
+    VALIDATE $? "Installing nodejs 20 version"
+
+    #installoing dependencies
+    npm install &>>$LOG_FILE
+    VALIDATE $? "Installing npm dependencies"
+
+}
+
+#system d setup service file
+systemd_setup(){
+    cp $SCRIPT_DIR/$App_Name.service /etc/systemd/system/$App_Name.service
+    VALIDATE $? "Copying $App_Name service file for systemctl services"
+
+    #daemon-reload, enable and start $App_Name
+    systemctl daemon-reload &>>$LOG_FILE
+    systemctl enable $App_Name &>>$LOG_FILE
+    systemctl start $App_Name &>>$LOG_FILE
+    VALIDATE $? "daemon-reload, enable and start $App_Name"
+}
 # Checking user has root previlages to run or not
 check_root(){
     if [ $USERID -ne 0 ]
